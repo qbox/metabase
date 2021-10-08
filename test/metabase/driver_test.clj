@@ -2,7 +2,8 @@
   (:require [clojure.test :refer :all]
             [metabase.driver :as driver]
             [metabase.driver.impl :as impl]
-            [metabase.plugins.classloader :as classloader]))
+            [metabase.plugins.classloader :as classloader]
+            [metabase.test :as mt]))
 
 (driver/register! ::test-driver, :abstract? true)
 
@@ -36,3 +37,15 @@
     (is (driver/available? ::test-driver))
     (is (driver/available? "metabase.driver-test/test-driver")
         "`driver/available?` should work for if `driver` is a string -- see #10135")))
+
+(deftest unique-connection-property-test
+  (mt/test-drivers (mt/all-drivers)
+    (testing (str driver/*driver* " has entirely unique connection property names")
+      (let [props         (driver/connection-properties driver/*driver*)
+            props-by-name (group-by :name props)]
+        (is (= (count props) (count props-by-name))
+            (format "Property(s) with duplicate name: %s" (-> (filter (fn [[_ props]]
+                                                                        (> (count props) 1))
+                                                                      props-by-name)
+                                                              vec
+                                                              pr-str)))))))

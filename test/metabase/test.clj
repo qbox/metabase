@@ -130,6 +130,7 @@
   query->preprocessed]
 
  [qp.test
+  all-drivers
   col
   cols
   first-row

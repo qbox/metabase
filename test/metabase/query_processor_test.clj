@@ -27,10 +27,16 @@
   "Drivers that are so weird that we can't run the normal driver tests against them."
   #{:druid :googleanalytics})
 
+(defn all-drivers
+  "All drivers (including the abnormal ones)."
+  {:added "0.42.0"}
+  []
+  (tx.env/test-drivers))
+
 (defn normal-drivers
   "Drivers that are reasonably normal in the sense that they can participate in the shared driver tests."
   []
-  (set/difference (tx.env/test-drivers) abnormal-drivers))
+  (set/difference (all-drivers) abnormal-drivers))
 
 (defn normal-drivers-with-feature
   "Set of engines that support a given `feature`. If additional features are given, it will ensure all features are
